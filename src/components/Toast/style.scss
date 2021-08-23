@@ -1,0 +1,70 @@
+.toast {
+    max-width: 450px;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    justify-content: center;
+    padding: 10px 20px;
+    box-shadow: 0 5px 8px rgba(0, 0, 0, 0.08);
+    transition: all linear 0.3s;
+    animation: slideInTop ease 0.3s, fadeOut linear 0.5s 1s forwards;
+    &--success {
+        border-color: #47d864;
+    }
+
+    &--success &__icon {
+        color: #47d864;
+    }
+
+    &--error {
+        border-color: #ff623d;
+    }
+
+    &--error &__icon {
+        color: #ff623d;
+    }
+
+    &__icon {
+        font-size: 22px;
+    }
+
+    &__icon {
+        padding-right: 10px;
+    }
+
+    &__body {
+        flex-grow: 1;
+    }
+
+    &__msg {
+        font-size: 1.2rem;
+        color: #888;
+        margin-bottom: 0;
+    }
+}
+
+#toast {
+    position: fixed;
+    top: 32px;
+    right: 50%;
+    z-index: 9999;
+    transform: translateX(50%);
+}
+
+@keyframes slideInTop {
+    from {
+        opacity: 0;
+        transform: translateY(calc(-100% - 32px));
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        transform: translateY(-20%);
+        opacity: 0;
+    }
+}

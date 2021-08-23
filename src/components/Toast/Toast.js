@@ -1,0 +1,30 @@
+import React from 'react'
+import './style.scss'
+import '../../icons/themify-icons/themify-icons.css'
+
+
+const Toast = ({ type = "success", msg }) => {
+    let classType = ''
+    switch (type) {
+        case "success":
+            classType = 'fas fa-check-circle'
+            break;
+        case "error":
+            classType = 'fas fa-times-circle'
+            break;
+        default:
+
+    }
+    return (
+        <div className={`toast toast--${ type }`} key={Math.random()}>
+            <div className="toast__icon">
+                <i className={classType}></i>
+            </div>
+            <div className="toast__body">
+                <p className="toast__msg">{msg} </p>
+            </div>
+        </div>
+    )
+}
+
+export default Toast
