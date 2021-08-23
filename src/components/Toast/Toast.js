@@ -1,7 +1,5 @@
 import React from 'react'
 import './style.scss'
-import '../../icons/themify-icons/themify-icons.css'
-
 
 const Toast = ({ type = "success", msg }) => {
     let classType = ''
