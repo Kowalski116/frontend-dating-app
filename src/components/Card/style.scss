@@ -1,0 +1,73 @@
+.card {
+    width: 400px;
+    color: #000;
+    background-color: white;
+    animation: fadeIn 1s;
+}
+.card-img {
+    width: 100%;
+    display: block;
+}
+
+.card-content {
+    padding: 24px;
+    font-size: 1.6rem;
+    .name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        max-width: 300px;
+        margin-right: 8px;
+        line-height: 1.6rem;
+    }
+    .age {
+        display: inline-block;
+        line-height: 1.6rem;
+        overflow: hidden;
+    }
+}
+
+.card-action {
+    display: flex;
+    margin-top: 15px;
+    border-top: 1px solid #ccc;
+    .card-btn:not(:first-child):before {
+        content: "";
+        border-right: 1px solid #ccc;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        height: 30px;
+        transform: translateY(-50%);
+    }
+    .card-btn {
+        position: relative;
+        width: 100%;
+        height: 60px;
+        font-size: 1.5rem;
+        text-align: center;
+        display: flex;
+        i {
+            margin: auto;
+        }
+        &:hover {
+            cursor: pointer;
+        }
+    }
+    .card-btn--cancel:hover {
+        color: red;
+    }
+    .card-btn--accept:hover {
+        color: greenyellow;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
