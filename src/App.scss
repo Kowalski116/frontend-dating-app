@@ -16,6 +16,7 @@
     margin-right: auto;
     width: 400px;
     margin-top: 50px;
+    min-height: 556px;
 }
 
 .count {
@@ -23,4 +24,23 @@
     font-size: 1.8rem;
     margin-top: 30px;
     margin-bottom: 15px;
+}
+
+.list-user {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    .col {
+        width: 300px;
+        padding-left: 100px;
+        h2 {
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style: none;
+            li {
+                margin-bottom: 10px;
+            }
+        }
+    }
 }
