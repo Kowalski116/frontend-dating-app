@@ -2,6 +2,7 @@ import './App.scss';
 import Card from './components/Card/Card'
 import Toast from './components/Toast/Toast'
 import { useState, useEffect } from 'react'
+import moment from 'moment'
 
 function App() {
   const img = "https://randomuser.me/api/portraits/women/58.jpg"
@@ -12,10 +13,11 @@ function App() {
   const [listUser, setListUser] = useState([])
   const [likedUser, setLiked] = useState([])
   const [dislikedUser, setDislikedUser] = useState([])
-  const [currentUser, setCurrentUser] = useState({})
+  const [currentUser, setCurrentUser] = useState(null)
   const [notify, setNotify] = useState({})
   const [page, setPage] = useState(0)
   const [countApi, setCountApi] = useState(1)
+
   async function getData(url = '', appId) {
     // Default options are marked with *
     const response = await fetch(url, {
@@ -27,17 +29,31 @@ function App() {
     });
     return response.json(); // parses JSON response into native JavaScript objects
   }
-  useEffect(() => {
-    getData(`https://dummyapi.io/data/v1/user?page=0&limit=10`, "6120b53724d80433f6a58d25")
-      .then(res => {
-        setListUser(prev => {
-          const temp = [...prev, ...res.data]
-          setCurrentUser(temp[0])
-          return temp
-        })
-        setCountApi(prev => prev - 1)
-      })
 
+  const getDetailUser = (page) => {
+    getData(`https://dummyapi.io/data/v1/user?page=${ page }&limit=10`, "6120b53724d80433f6a58d25")
+      .then(res => {
+        setCountApi(prev => prev - 1)
+        return res.data
+      })
+      .then(res => {
+        const promiseArray = res.map(a => {
+          return getData(`https://dummyapi.io/data/v1/user/${ a.id }`, "6120b53724d80433f6a58d25")
+            .then(res => res)
+        });
+        Promise.all(promiseArray)
+          .then(res => {
+            setListUser(prev => {
+              const temp = [...prev, ...res]
+              setCurrentUser(temp[0])
+              return temp
+            })
+          })
+      })
+      .catch(err => console.log(err))
+  }
+  useEffect(() => {
+    getDetailUser(0)
   }, [])
   function removeUser(listUser, id) {
     return listUser.filter(u => u.id !== id)
@@ -49,19 +65,10 @@ function App() {
       if (!countApi) {
         setCountApi(prev => prev + 1)
 
-        getData(`https://dummyapi.io/data/v1/user?page=${ page + 1 }&limit=10`, "6120b53724d80433f6a58d25")
-          .then(res => {
-            setListUser(prev => {
-              const temp = [...prev, ...res.data]
-              setCurrentUser(temp[0])
-              setCountApi(prev => prev - 1)
-              return temp
-            })
-
-          })
+        getDetailUser(page + 1)
+        setPage(prev => prev + 1)
       }
 
-      setPage(prev => prev + 1)
     }
     setListUser(newListUser)
     setCurrentUser(newListUser[0])
@@ -71,8 +78,13 @@ function App() {
     setDislikedUser([...dislikedUser, currentUser])
     const newListUser = removeUser(listUser, currentUser.id)
     if (newListUser.length < 5) {
-      setPage(prev => prev + 1)
-      setCountApi(prev => prev + 1)
+      if (!countApi) {
+        setCountApi(prev => prev + 1)
+
+        getDetailUser(page + 1)
+        setPage(prev => prev + 1)
+      }
+
     }
     setListUser(newListUser)
     setCurrentUser(newListUser[0])
@@ -88,11 +100,11 @@ function App() {
         {likedUser.length}
       </div>
       <div className="content">
-        {Object.keys(listUser).length ? <Card id={currentUser.id} img={currentUser.picture} name={`${ currentUser.firstName } ${ currentUser.lastName }`} age={age} onSubmit={onAccept} onCancel={onCancel} />
+        {currentUser ? <Card id={currentUser.id} img={currentUser.picture} name={`${ currentUser.firstName } ${ currentUser.lastName }`} age={moment().diff(currentUser.dateOfBirth, 'years')} onSubmit={onAccept} onCancel={onCancel} />
           : <h2>Loading...</h2>}
       </div>
       <div id="toast">
-        {notify.msg && <Toast msg={notify.msg} type={notify.type} />}
+        {notify.msg && <Toast msg={notify.msg} type={notify.type} key={currentUser?.id} />}
       </div>
     </div>
   );
