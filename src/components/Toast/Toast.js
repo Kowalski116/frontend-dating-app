@@ -11,10 +11,9 @@ const Toast = ({ type = "success", msg }) => {
             classType = 'fas fa-times-circle'
             break;
         default:
-
     }
     return (
-        <div className={`toast toast--${ type }`} key={Math.random()}>
+        <div className={`toast toast--${ type }`} >
             <div className="toast__icon">
                 <i className={classType}></i>
             </div>
@@ -25,4 +24,4 @@ const Toast = ({ type = "success", msg }) => {
     )
 }
 
-export default Toast
+export default React.memo(Toast)
