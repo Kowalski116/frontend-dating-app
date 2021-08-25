@@ -31,6 +31,7 @@ function App() {
   }
 
   const getDetailUser = (page) => {
+    setNotify({})
     getData(`https://dummyapi.io/data/v1/user?page=${ page }&limit=10`, "6120b53724d80433f6a58d25")
       .then(res => {
         setCountApi(prev => prev - 1)
