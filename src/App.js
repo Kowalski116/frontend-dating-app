@@ -42,8 +42,8 @@ function App() {
     });
     return response.json(); // parses JSON response into native JavaScript objects
   }
-
-  const getDetailUser = async (page) => {
+  //fetch list of user then fetch detail info each user
+  const getListDetailUser = async (page) => {
     setNotify({})
     let listUser = []
     await getData(`${ url }/user?page=${ page }&limit=10`, "6120b53724d80433f6a58d25")
@@ -71,7 +71,8 @@ function App() {
   }
   useEffect(() => {
     //save user info in first loading
-    getDetailUser(0).then(res => {
+    getListDetailUser(0).then(res => {
+      // already log in
       if (localStorage.getItem("user")) {
         const temp = JSON.parse(localStorage.getItem("user"))
 
@@ -114,7 +115,7 @@ function App() {
       if (!countApi) {
         setCountApi(prev => prev + 1)
 
-        getDetailUser(page + 1)
+        getListDetailUser(page + 1)
         setPage(prev => prev + 1)
       }
 
@@ -137,7 +138,7 @@ function App() {
       if (!countApi) {
         setCountApi(prev => prev + 1)
 
-        getDetailUser(page + 1)
+        getListDetailUser(page + 1)
         setPage(prev => prev + 1)
       }
 
