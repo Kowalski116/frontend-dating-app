@@ -2,9 +2,9 @@ import React from 'react'
 import './style.scss'
 
 
-const Card = ({ name, age, img, onSubmit, onCancel }) => {
+const Card = ({ id, name, age, img, onSubmit, onCancel }) => {
     return (
-        <div className="card">
+        <div className="card" key={id}>
             <img src={img} alt="img" className="card-img" />
 
             <div className="card-content">
