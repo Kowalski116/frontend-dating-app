@@ -164,13 +164,15 @@ function App() {
       </div>
       <div className="list-user">
         <div className="col">
-          <h2>Liked</h2>
+          <input type='checkbox' className='toggle' id='like' />
+          <label htmlFor='like'>Liked</label>
           <ul >
             {likedUser.map((u, index) => <li key={index}>{u.firstName} {u.lastName} {moment().diff(u.dateOfBirth, 'years')}</li>)}
           </ul>
         </div>
         <div className="col">
-          <h2>Not my type</h2>
+          <input type='checkbox' className='toggle1' id='pass' />
+          <label htmlFor='pass'>Not my type</label>
           <ul>
             {dislikedUser.map((u, index) => <li key={index}>{u.firstName} {u.lastName} {moment().diff(u.dateOfBirth, 'years')}</li>)}
           </ul>
