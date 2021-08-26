@@ -1,0 +1,78 @@
+.App {
+    min-height: 100vh;
+    background-color: #031427;
+    color: #fff;
+    padding-top: 20px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+.content {
+    margin-left: auto;
+    margin-right: auto;
+    width: 400px;
+    margin-top: 50px;
+    min-height: 556px;
+}
+
+.count {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.list-user {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    .col {
+        width: 300px;
+        padding-left: 100px;
+        label {
+            display: block;
+            font-size: 1.5em;
+            margin-block-end: 0.83em;
+            margin-inline-start: 0px;
+            margin-inline-end: 0px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        input.toggle {
+            display: none;
+        }
+
+        input.toggle1 {
+            display: none;
+        }
+
+        input.toggle:checked ~ ul {
+            max-height: 500px;
+        }
+
+        input.toggle1:checked ~ ul {
+            max-height: 500px;
+        }
+
+        ul {
+            list-style: none;
+            max-height: 0;
+            overflow: hidden;
+
+            transition: all 0.5s ease-in-out;
+            li {
+                margin-bottom: 10px;
+            }
+        }
+    }
+}
