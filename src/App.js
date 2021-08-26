@@ -9,7 +9,7 @@ function App() {
   const [infoUser, setInfoUser] = useState()
   // list users currently in tab
   const [listUser, setListUser] = useState([])
-  const [likedUser, setLiked] = useState([])
+  const [likedUser, setLikedUser] = useState([])
   const [dislikedUser, setDislikedUser] = useState([])
   // user is showing 
   const [currentUser, setCurrentUser] = useState(null)
@@ -27,6 +27,18 @@ function App() {
         'Content-Type': 'application/json',
         "app-id": appId
       },
+    });
+    return response.json(); // parses JSON response into native JavaScript objects
+  }
+
+  // post data 
+  async function postData(url = '', data) {
+    const response = await fetch(url, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
     });
     return response.json(); // parses JSON response into native JavaScript objects
   }
@@ -61,14 +73,21 @@ function App() {
     //save user info in first loading
     getDetailUser(0).then(res => {
       if (localStorage.getItem("user")) {
-        setInfoUser(JSON.parse(localStorage.getItem("user")))
-        // set infouser end delete that user from listuser
+        const temp = JSON.parse(localStorage.getItem("user"))
+
+        setLikedUser(temp.like)
+        setDislikedUser(temp.pass)
+        setInfoUser(temp)
+        // set infouser and delete that user from listuser
         setListUser(prev => {
           setCurrentUser(prev[1])
           return prev.slice(1)
         })
       } else {
+        res[0].like = []
+        res[0].pass = []
         localStorage.setItem("user", JSON.stringify(res[0]))
+
         setInfoUser(res[0])
         setListUser(prev => {
           setCurrentUser(prev[1])
@@ -81,7 +100,14 @@ function App() {
     return listUser.filter(u => u.id !== id)
   }
   const onAccept = () => {
-    setLiked([...likedUser, currentUser])
+    const data = { idUser: infoUser.id, idLikeUser: currentUser.id }
+    postData(`${ url }/user/like`, data)
+      .then(res => {
+        // save to localStorage
+        infoUser.like = [...infoUser.like, currentUser]
+        localStorage.setItem('user', JSON.stringify(infoUser))
+      })
+    setLikedUser([...likedUser, currentUser])
     const newListUser = removeUser(listUser, currentUser.id)
     // when the number of users in the tab is less than 5 api call to load more
     if (newListUser.length < 5) {
@@ -98,6 +124,13 @@ function App() {
     setNotify({ msg: "What an awesome profile !", type: "success" })
   }
   const onCancel = () => {
+    const data = { idUser: infoUser.id, idLikeUser: currentUser.id }
+    postData(`${ url }/user/pass`, data)
+      .then(res => {
+        // save to localStorage
+        infoUser.pass = [...infoUser.pass, currentUser]
+        localStorage.setItem('user', JSON.stringify(infoUser))
+      })
     setDislikedUser([...dislikedUser, currentUser])
     const newListUser = removeUser(listUser, currentUser.id)
     if (newListUser.length < 5) {
