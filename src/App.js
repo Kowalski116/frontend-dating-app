@@ -5,19 +5,20 @@ import { useState, useEffect } from 'react'
 import moment from 'moment'
 
 function App() {
-  const img = "https://randomuser.me/api/portraits/women/58.jpg"
-  const name = "Sara"
-  const age = "20"
-  const [info, setInfo] = useState({})
-  const [countAccept, setCountAccept] = useState(0)
+  // infoUser logged
+  const [infoUser, setInfoUser] = useState()
+  // list users currently in tab
   const [listUser, setListUser] = useState([])
   const [likedUser, setLiked] = useState([])
   const [dislikedUser, setDislikedUser] = useState([])
+  // user is showing 
   const [currentUser, setCurrentUser] = useState(null)
   const [notify, setNotify] = useState({})
   const [page, setPage] = useState(0)
+  // flag for just one api running at the same time
   const [countApi, setCountApi] = useState(1)
-
+  const url = 'http://localhost:5000'
+  // const url = 'https://dummyapi.io/data/v1/'
   async function getData(url = '', appId) {
     // Default options are marked with *
     const response = await fetch(url, {
@@ -30,31 +31,51 @@ function App() {
     return response.json(); // parses JSON response into native JavaScript objects
   }
 
-  const getDetailUser = (page) => {
+  const getDetailUser = async (page) => {
     setNotify({})
-    getData(`https://dummyapi.io/data/v1/user?page=${ page }&limit=10`, "6120b53724d80433f6a58d25")
+    let listUser = []
+    await getData(`${ url }/user?page=${ page }&limit=10`, "6120b53724d80433f6a58d25")
       .then(res => {
         setCountApi(prev => prev - 1)
         return res.data
       })
       .then(res => {
         const promiseArray = res.map(a => {
-          return getData(`https://dummyapi.io/data/v1/user/${ a.id }`, "6120b53724d80433f6a58d25")
+          return getData(`${ url }/user/${ a.id }`, "6120b53724d80433f6a58d25")
             .then(res => res)
         });
-        Promise.all(promiseArray)
+        return Promise.all(promiseArray)
           .then(res => {
             setListUser(prev => {
               const temp = [...prev, ...res]
               setCurrentUser(temp[0])
               return temp
             })
+            listUser = res
           })
       })
       .catch(err => console.log(err))
+    return listUser
   }
   useEffect(() => {
-    getDetailUser(0)
+    //save user info in first loading
+    getDetailUser(0).then(res => {
+      if (localStorage.getItem("user")) {
+        setInfoUser(JSON.parse(localStorage.getItem("user")))
+        // set infouser end delete that user from listuser
+        setListUser(prev => {
+          setCurrentUser(prev[1])
+          return prev.slice(1)
+        })
+      } else {
+        localStorage.setItem("user", JSON.stringify(res[0]))
+        setInfoUser(res[0])
+        setListUser(prev => {
+          setCurrentUser(prev[1])
+          return prev.slice(1)
+        })
+      }
+    })
   }, [])
   function removeUser(listUser, id) {
     return listUser.filter(u => u.id !== id)
@@ -62,6 +83,7 @@ function App() {
   const onAccept = () => {
     setLiked([...likedUser, currentUser])
     const newListUser = removeUser(listUser, currentUser.id)
+    // when the number of users in the tab is less than 5 api call to load more
     if (newListUser.length < 5) {
       if (!countApi) {
         setCountApi(prev => prev + 1)
@@ -91,17 +113,17 @@ function App() {
     setCurrentUser(newListUser[0])
     setNotify({ msg: "Not my type", type: "error" })
   }
-
+  if (!infoUser) return <div className="App text-center"><h2>Loading...</h2></div>
   return (
     <div className="App">
       <h1 className="title">
-        Hello CoderPush
+        Hello {infoUser.firstName} {infoUser.lastName}
       </h1>
       <div className="count">
         {likedUser.length}
       </div>
       <div className="content">
-        {currentUser ? <Card id={currentUser.id} img={currentUser.picture} name={`${ currentUser.firstName } ${ currentUser.lastName }`} age={moment().diff(currentUser.dateOfBirth, 'years')} onSubmit={onAccept} onCancel={onCancel} />
+        {currentUser ? <Card key={currentUser.id} id={currentUser.id} img={currentUser.picture} name={`${ currentUser.firstName } ${ currentUser.lastName }`} age={moment().diff(currentUser.dateOfBirth, 'years')} onSubmit={onAccept} onCancel={onCancel} />
           : <h2>Loading...</h2>}
       </div>
       <div id="toast">
